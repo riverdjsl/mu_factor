@@ -75,8 +75,9 @@ def mu(book, a, b, rxx):
 
 	def frame(node):
 		for i in cfs.range('A4').expand().value:
-			if i[2] == node:
+			if i[2] == node or i[1] == node:
 				return i[0], i[4]
+
 
 	log.write('\n')
 	title1 = '{:>10}{:>10}{:>10}{:>10}{:>10}'.format('Mode', 'Factor', 'Node', 'Disp', 'Frame')
@@ -90,7 +91,10 @@ def mu(book, a, b, rxx):
 		nodei = maxnode(i)[0]
 		maxnodedispi = maxnode(i)[1]
 		framei = frame(nodei)
-		data[framei[0]] = [i, j, framei[1]]
+		try:
+			data[framei[0]] = [i, j, framei[1]]
+		except TypeError:
+			continue
 		frame_critical.append(framei[0])
 
 		content1 = '{:10}{:10.2f}{:>10}{:10.2e}{:>10}'.format(i, j, nodei, maxnodedispi, framei[0])
@@ -115,7 +119,7 @@ def mu(book, a, b, rxx):
 	mus = []
 	for j, i in data.items():
 		p = i[-len(bf):][i[0]]
-		if p/i[1] < 0 and p < 0:
+		if p*i[1] < 0 and p < 0:
 			muii = mui(ixx, p, i[2])
 			mus.append([muii, i[2]])
 
@@ -195,9 +199,7 @@ def writetable(datafile, loc):
 		c = OSC.range("A"+str(k)).value
 		if c in b:
 			OSC.range(loc+str(k)).value = data[c]
-		elif c is not None:
-			OSC.range(loc+str(k)).value = 0
-		else:
+		elif c is None:
 			break
 		k += 1
 
@@ -209,7 +211,12 @@ def run(flist):
 	return results
 
 
-filelist = [['buckpattern2_upperring.xlsx', 20, 40, 12], ['buckpattern1_lowerring.xlsx', 0, 20, 11], ['buckpattern1_upperring.xlsx', 0, 20, 11]]
+filelist = [['buckpattern3_col1.xlsx', 40, 50, 11], \
+			['buckpattern3_col2.xlsx', 40, 50, 11], \
+			['buckpattern2_lowerring.xlsx', 20, 40, 12], \
+			['buckpattern2_upperring.xlsx', 20, 40, 12], \
+			['buckpattern1_lowerring.xlsx', 0, 20, 11], \
+			['buckpattern1_upperring.xlsx', 0, 20, 11]]
 
 with open('log.txt', 'w') as f:
 	f.close()
