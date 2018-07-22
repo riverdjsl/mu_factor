@@ -5,6 +5,10 @@ import time
 bucfacbook = xw.Book('buckfac.xlsx')
 bfs = bucfacbook.sheets['Buckling Factors']
 
+modelbook = xw.Book('newmodel.xlsx')
+OSC = modelbook.sheets['Over - Steel - Chinese 2010']
+
+
 def GetNowTime():
     return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
 
@@ -131,7 +135,7 @@ def mu(book, a, b, rxx):
 					l0 = j[0]*j[1]
 					signal = False
 			else:
-				print('Out of range, try again!')
+				print('Out of range!')
 		except Exception:
 			print('Number!Please!!')
 
@@ -156,14 +160,72 @@ def mu(book, a, b, rxx):
 	log.close()
 	print("done for now")
 
-	return muall
+	return outfilename
 
 
+def trans_comma_str(string):
+	'''to transform comma strings into lists of numbers'''
+	item = []
+	lst = []
+	for i in string[:-1]:
+		if i != ",":
+			item.append(i)
+		else:
+			try:
+				lst.append(float(''.join(item)))
+				item = []
+				continue
+			except Exception:
+				continue
+	return lst
+
+#loc = "I" or "J"
+def writetable(datafile, loc):
+	data = {}
+	with open(datafile) as f1:
+		for i in f1.readlines():
+			a = trans_comma_str(i)
+			data[str(int(a[0]))] = a[1]
+		f1.close()
+
+	b = set(data.keys())
+
+	k = 4
+	while True:
+		c = OSC.range("A"+str(k)).value
+		if c in b:
+			OSC.range(loc+str(k)).value = data[c]
+		elif c is not None:
+			OSC.range(loc+str(k)).value = 0
+		else:
+			break
+		k += 1
+
+
+def run(flist):
+	results = []
+	for i in flist:
+		results.append(mu(*i))
+	return results
+
+
+filelist = [['buckpattern2_upperring.xlsx', 20, 40, 12], ['buckpattern1_lowerring.xlsx', 0, 20, 11], ['buckpattern1_upperring.xlsx', 0, 20, 11]]
 
 with open('log.txt', 'w') as f:
 	f.close()
 
-print(mu('buckpattern2_upperring.xlsx', 20, 40, 12))
-print(mu('buckpattern1_lowerring.xlsx', 0, 20, 11))
-print(mu('buckpattern1_upperring.xlsx', 0, 20, 11))
+outfiles = run(filelist)
+
+print('Now the final stage: writing the new model!!')
+
+for i in outfiles:
+	if int(i[4:6]) == 11:
+		writetable(i, 'I')
+	elif int(i[4:6]) == 12:
+		writetable(i, 'J')
+	else:
+		continue
+
+
+
 
