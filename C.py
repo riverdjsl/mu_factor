@@ -213,10 +213,8 @@ def run(flist):
 
 filelist = [['buckpattern3_col1.xlsx', 40, 50, 11], \
 			['buckpattern3_col2.xlsx', 50, 60, 11], \
-			['buckpattern2_lowerring.xlsx', 20, 40, 12], \
-			['buckpattern2_upperring.xlsx', 20, 40, 12], \
-			['buckpattern1_lowerring.xlsx', 0, 20, 11], \
-			['buckpattern1_upperring.xlsx', 0, 20, 11]]
+			['buckpattern2_allring.xlsx', 20, 40, 12], \
+			['buckpattern1_allring.xlsx', 0, 20, 11]]
 
 with open('log.txt', 'w') as f:
 	f.close()
