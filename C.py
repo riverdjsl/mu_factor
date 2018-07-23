@@ -52,7 +52,7 @@ def mu(book, a, b, rxx):
 	def disp(sht, n):
 		k = 0
 		while True:
-			key = str(4+n+k*len(bf))
+			key = str(4+n+k*(len(bf)+1))
 			try:
 				a = sht.range('A'+key).value
 				d1 = sht.range('F'+key).value
@@ -118,8 +118,8 @@ def mu(book, a, b, rxx):
 
 	mus = []
 	for j, i in data.items():
-		p = i[-len(bf):][i[0]]
-		if p*i[1] < 0 and p < 0:
+		p = i[-1]*i[1]
+		if  p < 0:
 			muii = mui(ixx, p, i[2])
 			mus.append([muii, i[2]])
 
@@ -212,7 +212,7 @@ def run(flist):
 
 
 filelist = [['buckpattern3_col1.xlsx', 40, 50, 11], \
-			['buckpattern3_col2.xlsx', 40, 50, 11], \
+			['buckpattern3_col2.xlsx', 50, 60, 11], \
 			['buckpattern2_lowerring.xlsx', 20, 40, 12], \
 			['buckpattern2_upperring.xlsx', 20, 40, 12], \
 			['buckpattern1_lowerring.xlsx', 0, 20, 11], \
@@ -222,6 +222,7 @@ with open('log.txt', 'w') as f:
 	f.close()
 
 outfiles = run(filelist)
+
 
 print('Now the final stage: writing the new model!!')
 
